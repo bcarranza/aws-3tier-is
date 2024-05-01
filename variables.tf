@@ -107,8 +107,8 @@ variable "web_server_name" {
 }
 variable "web_server_ami" {
   type        = string
-  description = "Instance AMI: Amazon Linux 2"
-  default     = "ami-04581fbf744a7d11f"
+  description = "Instance AMI: Ubuntu 22.04"
+  default     = "ami-04b70fa74e45c3917"
 }
 variable "web_server_type" {
   type    = string
@@ -124,7 +124,13 @@ variable "key_pair" {
 variable "user_data_file" {
   type        = string
   description = "user data file path"
-  default     = "install_httpd.sh"
+  default     = "pre-deployment.sh"
+}
+
+variable "user_data_bastion_host" {
+  type        = string
+  description = "user data file path"
+  default     = "hosted-runner.sh"
 }
 
 # ASG vars

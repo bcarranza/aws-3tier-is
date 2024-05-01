@@ -27,6 +27,41 @@ resource "aws_security_group" "ssh_sg" {
   }
 }
 
+# Bastion Host Access
+resource "aws_security_group" "bastion_sg" {
+  name        = "${var.app_name}-bastion-sg"
+  description = "Allow all for bastian host"
+  vpc_id      = aws_vpc.vpc.id
+
+  ingress {
+    description = "ssh from IP"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = [var.all_traffic]
+  }
+
+  egress {
+    from_port        = 0
+    to_port          = 0
+    protocol         = "-1"
+    cidr_blocks      = [var.all_traffic]
+    ipv6_cidr_blocks = ["::/0"]
+  }
+
+  lifecycle {
+    create_before_destroy = true
+  }
+
+  timeouts {
+    delete = var.ssh_sg["timeout_delete"]
+  }
+
+  tags = {
+    Name = "${var.app_name}-bastion-sg"
+  }
+}
+
 # Web access security group
 #----------------------------------------------------
 resource "aws_security_group" "web_access_sg" {
@@ -92,6 +127,23 @@ resource "aws_security_group" "alb_access_sg" {
     description     = "allow https traffic from alb sg"
     from_port       = 443
     to_port         = 443
+    protocol        = "tcp"
+    security_groups = [aws_security_group.web_access_sg.id]
+  }
+
+  # node js
+  ingress {
+    description     = "allow https traffic from alb sg"
+    from_port       = 4000
+    to_port         = 4000
+    protocol        = "tcp"
+    security_groups = [aws_security_group.web_access_sg.id]
+  }
+  # react js
+  ingress {
+    description     = "allow https traffic from alb sg"
+    from_port       = 3000
+    to_port         = 3000
     protocol        = "tcp"
     security_groups = [aws_security_group.web_access_sg.id]
   }
