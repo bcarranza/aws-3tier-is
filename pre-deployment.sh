@@ -15,11 +15,10 @@ apt install tar -y
 # Check available Node.js Version
 apt policy nodejs
 
-# Add Nodejs latest repo on Ec2 Ubuntu
-curl -fsSL https://deb.nodesource.com/setup_lts.x |  -E bash -
-
 # Install Nodejs & NPM
 apt-get install nodejs -y
+
+apt install npm -y
 
 # Install Nginx
 apt-get install nginx -y
@@ -54,7 +53,7 @@ tar xzf ./actions-runner-linux-x64-2.316.0.tar.gz
 # Create the runner and start the configuration experience
 export RUNNER_ALLOW_RUNASROOT="1"
 export SERVERNAME=$(echo $RANDOM)
-./config.sh --url https://github.com/bcarranza/money-tracker --token AEWG2KZSNIJMBACV24INOE3GGML5W --name webserver-$(echo $SERVERNAME) --labels $(echo $SERVERNAME) --unattended
+./config.sh --url https://github.com/bcarranza/money-tracker --token AEWG2K2KKV3BKMDD5OXRHZ3GGMNAS --name webserver-$(echo $SERVERNAME) --labels $(echo $SERVERNAME) --unattended
 # Last step, run it!
 nohup ./run.sh > /dev/null 2>&1 &
 
