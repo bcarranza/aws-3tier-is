@@ -54,7 +54,7 @@ tar xzf ./actions-runner-linux-x64-2.316.0.tar.gz
 # Create the runner and start the configuration experience
 export RUNNER_ALLOW_RUNASROOT="1"
 export SERVERNAME=$(echo $RANDOM)
-./config.sh --url https://github.com/bcarranza/money-tracker --token AEWG2KYKGJYLBJKJKBIWRZ3GFVJ6E --name webserver-$(echo $SERVERNAME) --labels $(echo $SERVERNAME) --unattended
+./config.sh --url https://github.com/bcarranza/money-tracker --token AEWG2KZSNIJMBACV24INOE3GGML5W --name webserver-$(echo $SERVERNAME) --labels $(echo $SERVERNAME) --unattended
 # Last step, run it!
 nohup ./run.sh > /dev/null 2>&1 &
 
