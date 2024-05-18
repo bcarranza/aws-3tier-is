@@ -86,6 +86,15 @@ resource "aws_security_group" "web_access_sg" {
     cidr_blocks = [var.all_traffic]
   }
 
+  # backend
+  ingress {
+    description = "BACKEND"
+    from_port   = 4000
+    to_port     = 4000
+    protocol    = "tcp"
+    cidr_blocks = [var.all_traffic]
+  }
+
   egress {
     from_port        = 0
     to_port          = 0
@@ -139,14 +148,7 @@ resource "aws_security_group" "alb_access_sg" {
     protocol        = "tcp"
     security_groups = [aws_security_group.web_access_sg.id]
   }
-  # react js
-  ingress {
-    description     = "allow https traffic from alb sg"
-    from_port       = 3000
-    to_port         = 3000
-    protocol        = "tcp"
-    security_groups = [aws_security_group.web_access_sg.id]
-  }
+
 
   egress {
     from_port        = 0
@@ -166,5 +168,67 @@ resource "aws_security_group" "alb_access_sg" {
 
   tags = {
     Name = "${var.app_name}-alb-access-sg"
+  }
+}
+
+resource "aws_security_group" "nlb_backend_access_sg" {
+  name        = "${var.app_name}-nlb-backend-access-sg"
+  description = "Allow http traffic from NLB"
+  vpc_id      = aws_vpc.vpc.id
+
+  # http
+  ingress {
+    description     = "allow http traffic from alb sg"
+    from_port       = 80
+    to_port         = 80
+    protocol        = "tcp"
+    security_groups = [aws_security_group.web_access_sg.id]
+  }
+  # https
+  ingress {
+    description     = "allow https traffic from alb sg"
+    from_port       = 443
+    to_port         = 443
+    protocol        = "tcp"
+    security_groups = [aws_security_group.web_access_sg.id]
+  }
+
+  # node js
+  ingress {
+    description     = "allow https traffic from alb sg"
+    from_port       = 4000
+    to_port         = 4000
+    protocol        = "tcp"
+    security_groups = [aws_security_group.web_access_sg.id]
+  }
+
+  # All
+  ingress {
+    description     = "allow https traffic from alb sg"
+    from_port        = 0
+    to_port          = 0
+    protocol         = "-1"
+    cidr_blocks      = [var.all_traffic]
+  }
+
+
+  egress {
+    from_port        = 0
+    to_port          = 0
+    protocol         = "-1"
+    cidr_blocks      = [var.all_traffic]
+    ipv6_cidr_blocks = ["::/0"]
+  }
+
+  lifecycle {
+    create_before_destroy = true
+  }
+
+  timeouts {
+    delete = var.alb_access_sg["timeout_delete"]
+  }
+
+  tags = {
+    Name = "${var.app_name}-nlb-backend-access-sg"
   }
 }

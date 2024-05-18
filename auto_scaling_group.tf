@@ -6,8 +6,9 @@ resource "aws_autoscaling_group" "web_server_asg" {
   min_size            = var.web_asg_capacity["min"]
   max_size            = var.web_asg_capacity["max"]
   vpc_zone_identifier = [for subnet in aws_subnet.private_subnets : subnet.id]
-  target_group_arns   = [aws_lb_target_group.web_alb_tg_http.arn]
+  target_group_arns   = [aws_lb_target_group.web_alb_tg_http.arn, aws_lb_target_group.app_nlb_tg_http.arn]
   health_check_type   = var.web_asg_health_check_type
+  health_check_grace_period = var.health_check_grace_period
 
   launch_template {
     id      = aws_launch_template.web_server.id

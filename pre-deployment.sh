@@ -1,60 +1,66 @@
 #!/bin/bash
+set -e
+set -o pipefail
 
 # Run system update
-apt-get update
+apt-get update &&
 
 # install curl
-apt install curl -y
+apt install curl -y &&
 
 # install tar
-apt install tar -y
-
+apt install tar -y &&
 
 ## Install Nodejs
 
 # Check available Node.js Version
-apt policy nodejs
+apt policy nodejs &&
 
 # Install Nodejs & NPM
-apt-get install nodejs -y
-
-apt install npm -y
+apt-get install nodejs -y &&
+apt install npm -y &&
 
 # Install Nginx
-apt-get install nginx -y
+apt-get install nginx -y &&
 
 # Start nginx
-service nginx start
+service nginx start &&
 
 # Ensure every time you restart your system Nginx starts up automatically.
-systemctl enable nginx
+systemctl enable nginx &&
+
+# Install nano text editor
+apt-get install nano -y &&
+
+# Install pm2
+npm install pm2 -g &&
+
+# Configure PM2 to start Express application at startup.
+env PATH=$PATH:/usr/local/bin pm2 startup -u ubuntu &&
+
+# Start to listening in port 4000
+echo "const http = require('http'); const server = http.createServer((req, res) => { res.statusCode = 200; res.setHeader('Content-Type', 'text/plain'); res.end('Hello, World!'); }); server.listen(4000, () => { console.log('Server running at http://localhost:3000/'); });" > hello-world.js && pm2 start hello-world.js --name backend &&
 
 
-#Install nano text editor
-apt-get install nano -y
+git clone https://github.com/bcarranza/money-tracker.git &&
+cd money-tracker &&
 
-#install pm2
-npm install pm2 -g -y
+# Deploying frontend for the first time
+echo REACT_APP_API_URL="${backend_url}:4000/api" > .env &&
+npm install &&
+npm run build &&
+chmod 777 /var/www/html -R &&
+rm -rf /var/www/html/* &&
+scp -r ./build/* /var/www/html &&
+systemctl restart nginx &&
 
-#Configure PM2 to start Express application at startup.
-env PATH=$PATH:/usr/local/bin pm2 startup -u ubuntu
+# Deploying backend for the first time
+cd api &&
+echo MONGO_URL="mongodb+srv://admin:T9ud6IkaljkQQrA2@moneytracker.pmedkyg.mongodb.net/?retryWrites=true&w=majority&appName=moneytracker" > .env &&
+# Start the application with PM2
+npm install &&
+pm2 delete backend &&
+pm2 start index.js --name backend
 
-
-# Github Hosted Runner
-# Create a folder
-mkdir actions-runner && cd actions-runner
-# Download the latest runner package
-curl -o actions-runner-linux-x64-2.316.0.tar.gz -L https://github.com/actions/runner/releases/download/v2.316.0/actions-runner-linux-x64-2.316.0.tar.gz
-# Optional: Validate the hash
-echo "64a47e18119f0c5d70e21b6050472c2af3f582633c9678d40cb5bcb852bcc18f  actions-runner-linux-x64-2.316.0.tar.gz" | shasum -a 256 -c
-# Extract the installer
-tar xzf ./actions-runner-linux-x64-2.316.0.tar.gz
-
-# Create the runner and start the configuration experience
-export RUNNER_ALLOW_RUNASROOT="1"
-export SERVERNAME=$(echo $RANDOM)
-./config.sh --url https://github.com/bcarranza/money-tracker --token AEWG2K2KKV3BKMDD5OXRHZ3GGMNAS --name webserver-$(echo $SERVERNAME) --labels $(echo $SERVERNAME) --unattended
-# Last step, run it!
-nohup ./run.sh > /dev/null 2>&1 &
 
 

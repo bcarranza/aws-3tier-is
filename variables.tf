@@ -140,7 +140,7 @@ variable "web_asg_capacity" {
   description = "min, max, and desired instance capacity"
   default = {
     "min" = 2
-    "max" = 5
+    "max" = 2
   }
 }
 variable "web_asg_health_check_type" {
@@ -148,6 +148,12 @@ variable "web_asg_health_check_type" {
   description = "health check type"
   default     = "ELB"
 }
+variable "health_check_grace_period" {
+  type = number
+  description = "Time (in seconds) after instance comes into service before checking health."
+  default = 600
+}
+
 variable "web_asg_scaling_policy" {
   type        = map(any)
   description = "scaling policy"
@@ -166,10 +172,22 @@ variable "load_balancer_name" {
   default     = "web-alb"
 }
 
-variable "load_balancer_internal" {
+variable "load_balancer_backend_name" {
+  type        = string
+  description = "load balancer name"
+  default     = "app-alb"
+}
+
+variable "load_balancer_external" {
   type        = bool
   description = "Is looad balancer internal facing?"
   default     = false
+}
+
+variable "load_balancer_internal" {
+  type        = bool
+  description = "Is looad balancer internal facing?"
+  default     = true
 }
 
 variable "load_balancer_type" {
@@ -202,6 +220,17 @@ variable "web_alb_tg_https" {
   }
 }
 
+variable "app_nlb_tg_node" {
+  type        = map(any)
+  description = "http target group vars"
+  default = {
+    "name"     = "app-tg-node"
+    "port"     = 4000
+    "protocol" = "TCP"
+
+  }
+}
+
 # ALB listener vars
 #----------------------------------------
 variable "web_alb_listener_http" {
@@ -224,3 +253,12 @@ variable "web_alb_listener_https" {
   }
 }
 
+variable "app_nlb_listener_node" {
+  type        = map(any)
+  description = "https listener vars"
+  default = {
+    "port"        = 4000
+    "protocol"    = "TCP"
+    "action_type" = "forward"
+  }
+}
