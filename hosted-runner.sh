@@ -23,6 +23,6 @@ tar xzf ./actions-runner-linux-x64-2.316.0.tar.gz
 # Create the runner and start the configuration experience
 export RUNNER_ALLOW_RUNASROOT="1"
 export SERVERNAME="money-tracker-deploy"
-./config.sh --url https://github.com/bcarranza/money-tracker --token AEWG2K2VFUPK3BUGVISOLSLGJBNPK --name webserver-$(echo $SERVERNAME) --labels $(echo $SERVERNAME) --unattended
+./config.sh --url https://github.com/bcarranza/money-tracker --token AEWG2K5K2YSK54ZGVGQ666LGJD7PK --name webserver-$(echo $SERVERNAME) --labels $(echo $SERVERNAME) --unattended
 # Last step, run it!
 nohup ./run.sh > /dev/null 2>&1 &

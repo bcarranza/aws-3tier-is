@@ -16,7 +16,13 @@ resource "aws_launch_template" "web_server" {
   user_data              = base64encode(data.template_file.user_data.rendered)
   key_name               = var.key_pair
   vpc_security_group_ids = [aws_security_group.ssh_sg.id, aws_security_group.alb_access_sg.id, aws_security_group.nlb_backend_access_sg.id]
+  block_device_mappings {
+    device_name = "/dev/sdf"
 
+    ebs {
+      volume_size = 50
+    }
+  }
   tags = {
     "Name" = "${var.app_name}-${var.web_server_name}-template"
   }
