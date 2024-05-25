@@ -47,6 +47,7 @@ cd money-tracker &&
 
 # Deploying frontend for the first time
 echo REACT_APP_API_URL="${backend_url}:4000/api" > .env &&
+
 npm install &&
 npm run build &&
 chmod 777 /var/www/html -R &&
@@ -61,6 +62,3 @@ echo MONGO_URL="mongodb+srv://admin:T9ud6IkaljkQQrA2@moneytracker.pmedkyg.mongod
 npm install &&
 pm2 delete backend &&
 pm2 start index.js --name backend
-
-
-
