@@ -9,12 +9,11 @@ variable "aws_region" {
   type    = string
   default = "us-east-1"
 }
-# naming vars
-#---------------------------------------
+
 variable "app_name" {
   type        = string
   description = "app name prefix for naming"
-  default     = "shoppr"
+  default     = "umgis2025"
 }
 
 # vpc vars
@@ -80,37 +79,19 @@ variable "ssh_sg" {
   }
 }
 
-variable "web_access_sg" {
-  type        = map(any)
-  description = "web access security group vars "
-  default = {
-    "create_before_destroy" = true
-    "timeout_delete"        = "2m"
-  }
-}
-
-variable "alb_access_sg" {
-  type        = map(any)
-  description = "alb instance security group vars "
-  default = {
-    "create_before_destroy" = true
-    "timeout_delete"        = "2m"
-  }
-}
-
 
 # ec2 vars
 #----------------------------------------
-variable "web_server_name" {
+variable "bastion" {
   type    = string
-  default = "web-server"
+  default = "bastion"
 }
-variable "web_server_ami" {
+variable "bastion_ami" {
   type        = string
   description = "Instance AMI: Ubuntu 22.04"
   default     = "ami-04b70fa74e45c3917"
 }
-variable "web_server_type" {
+variable "bastion_type" {
   type    = string
   default = "t2.micro"
 }
@@ -118,147 +99,5 @@ variable "web_server_type" {
 variable "key_pair" {
   type        = string
   description = "ec2 key pair"
-  default     = "webServer_key"
-}
-
-variable "user_data_file" {
-  type        = string
-  description = "user data file path"
-  default     = "pre-deployment.sh"
-}
-
-variable "user_data_bastion_host" {
-  type        = string
-  description = "user data file path"
-  default     = "hosted-runner.sh"
-}
-
-# ASG vars
-#----------------------------------------
-variable "web_asg_capacity" {
-  type        = map(any)
-  description = "min, max, and desired instance capacity"
-  default = {
-    "min" = 2
-    "max" = 2
-  }
-}
-variable "web_asg_health_check_type" {
-  type        = string
-  description = "health check type"
-  default     = "ELB"
-}
-variable "health_check_grace_period" {
-  type = number
-  description = "Time (in seconds) after instance comes into service before checking health."
-  default = 600
-}
-
-variable "web_asg_scaling_policy" {
-  type        = map(any)
-  description = "scaling policy"
-  default = {
-    "policy_type"  = "TargetTrackingScaling"
-    "metric_type"  = "ASGAverageCPUUtilization"
-    "target_value" = 75.0
-  }
-}
-
-# ALB vars
-#----------------------------------------
-variable "load_balancer_name" {
-  type        = string
-  description = "load balancer name"
-  default     = "web-alb"
-}
-
-variable "load_balancer_backend_name" {
-  type        = string
-  description = "load balancer name"
-  default     = "app-alb"
-}
-
-variable "load_balancer_external" {
-  type        = bool
-  description = "Is looad balancer internal facing?"
-  default     = false
-}
-
-variable "load_balancer_internal" {
-  type        = bool
-  description = "Is looad balancer internal facing?"
-  default     = true
-}
-
-variable "load_balancer_type" {
-  type        = string
-  description = "load balancer"
-  default     = "application"
-}
-
-# ALB target group vars
-#----------------------------------------
-variable "web_alb_tg_http" {
-  type        = map(any)
-  description = "http target group vars"
-  default = {
-    "name"     = "web-server-tg-http"
-    "port"     = 80
-    "protocol" = "HTTP"
-
-  }
-}
-
-variable "web_alb_tg_https" {
-  type        = map(any)
-  description = "https target group vars"
-  default = {
-    "name"     = "web-server-tg-https"
-    "port"     = 443
-    "protocol" = "HTTPS"
-
-  }
-}
-
-variable "app_nlb_tg_node" {
-  type        = map(any)
-  description = "http target group vars"
-  default = {
-    "name"     = "app-tg-node"
-    "port"     = 4000
-    "protocol" = "TCP"
-
-  }
-}
-
-# ALB listener vars
-#----------------------------------------
-variable "web_alb_listener_http" {
-  type        = map(any)
-  description = "http listener vars"
-  default = {
-    "port"        = 80
-    "protocol"    = "HTTP"
-    "action_type" = "forward"
-  }
-}
-
-variable "web_alb_listener_https" {
-  type        = map(any)
-  description = "https listener vars"
-  default = {
-    "port"        = 443
-    "protocol"    = "HTTPS"
-    "action_type" = "forward"
-  }
-}
-
-variable "app_nlb_listener_node" {
-  type        = map(any)
-  description = "https listener vars"
-  default = {
-    "port"        = 4000
-    "protocol"    = "TCP"
-    "action_type" = "forward"
-  }
+  default     = "bastion_key"
 }
